@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ImageEditor" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="MainScreenTheme" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
+
+    <style name="SplashScreen" parent="Theme.SplashScreen">
+        <item name="postSplashScreenTheme">@style/MainScreenTheme</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+    </style>
+</resources>
