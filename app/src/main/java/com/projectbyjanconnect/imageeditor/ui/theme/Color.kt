@@ -3,7 +3,7 @@ package com.projectbyjanconnect.imageeditor.ui.theme
 import androidx.compose.ui.graphics.Color
 
 
-val Black = Color(0xFF2c2b30)
+val Black = Color(0xFF000000)
 val Gray = Color(0xFFa09e9f)
 val LightPink = Color(0xFFf9cdeb)
 val Pink = Color(0xFFf358b1)

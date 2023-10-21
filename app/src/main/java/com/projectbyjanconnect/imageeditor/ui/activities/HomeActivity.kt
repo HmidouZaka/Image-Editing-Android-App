@@ -8,7 +8,10 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
+import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreen
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthCompact
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthExpanded
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthMedium
@@ -19,8 +22,8 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ImageEditorTheme {
-
+            ImageEditorTheme(isCustomColorUsed = true) {
+                HomeScreen(modifier = Modifier.fillMaxSize())
             }
         }
     }

@@ -29,25 +29,22 @@ class StartUpActivity : ComponentActivity() {
                 val classSize = calculateWindowSizeClass(this)
 
                 val startEditingIntent = Intent(this,HomeActivity::class.java)
-
+                startEditingIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 when (classSize.widthSizeClass){
                     WindowWidthSizeClass.Compact -> {
                         StartUpScreenWidthCompact(Modifier.fillMaxSize()){
                             startActivity(startEditingIntent)
-                            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
                         }
                     }
                     WindowWidthSizeClass.Medium -> {
                         StartUpScreenWidthMedium(Modifier.fillMaxSize()){
                             startActivity(startEditingIntent)
-                            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
 
                         }
                     }
                     WindowWidthSizeClass.Expanded -> {
                         StartUpScreenWidthExpanded(Modifier.fillMaxSize()){
                             startActivity(startEditingIntent)
-                            overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
                         }
                     }
                 }
