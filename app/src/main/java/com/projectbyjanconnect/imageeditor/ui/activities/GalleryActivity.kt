@@ -11,27 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
-import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForNormalPhones
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthCompact
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthExpanded
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthMedium
 import com.projectbyjanconnect.imageeditor.ui.theme.ImageEditorTheme
 
-class HomeActivity : ComponentActivity() {
+class GalleryActivity : ComponentActivity() {
 
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ImageEditorTheme(isCustomColorUsed = true) {
-                val windowSizeClass = calculateWindowSizeClass(activity = this)
-                if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact){
-                    HomeScreenForNormalPhones(modifier = Modifier.fillMaxSize())
-                }else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact){
+            ImageEditorTheme {
 
-                }else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium){
-
-                }
             }
         }
     }

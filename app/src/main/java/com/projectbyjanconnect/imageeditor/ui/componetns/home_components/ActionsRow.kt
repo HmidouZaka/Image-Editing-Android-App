@@ -27,7 +27,12 @@ import com.projectbyjanconnect.imageeditor.ui.theme.MONTSERRAT_MEDIUM
 @Composable
 fun <T>ActionsRow(
     modifier: Modifier = Modifier,
-    listOfExamplesImages:List<T>
+    listOfExamplesImages:List<T>,
+    onClickGallery:()->Unit,
+    onClickPicture:()->Unit,
+    onClickDraw:()->Unit,
+    onClickLink:()->Unit,
+    onClickAI:()->Unit,
 ) {
 
     Column(modifier = modifier) {
@@ -59,7 +64,7 @@ fun <T>ActionsRow(
                 image = R.drawable.add_svgrepo_com,
                 text = "Gallery",
                 contentDescription = "Select Image From Gallery",
-                onClick = {}
+                onClick = onClickGallery
             )
 
 
@@ -71,7 +76,7 @@ fun <T>ActionsRow(
                 image = R.drawable.camera_svgrepo_com,
                 text = "Picture",
                 contentDescription = "take photo using phone camera",
-                onClick = {}
+                onClick = onClickPicture
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -81,7 +86,7 @@ fun <T>ActionsRow(
                 image = R.drawable.draw_svgrepo_com,
                 text = "Draw",
                 contentDescription = "draw photo",
-                onClick = {}
+                onClick = onClickDraw
             )
 
             Spacer(modifier = Modifier.padding(8.dp))
@@ -91,7 +96,7 @@ fun <T>ActionsRow(
                 image = R.drawable.link_svgrepo_com,
                 text = "Link",
                 contentDescription = "edit image using link",
-                onClick = {}
+                onClick = onClickLink
             )
 
 
@@ -102,7 +107,7 @@ fun <T>ActionsRow(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 IconButton(
-                    onClick = { },
+                    onClick = onClickAI,
                     colors = IconButtonDefaults.iconButtonColors(
                         containerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
                     ),
