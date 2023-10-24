@@ -1,6 +1,7 @@
 package com.projectbyjanconnect.imageeditor.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.view.WindowCompat
+import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForLargeScreens
+import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForMediumScreens
 import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForNormalPhones
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthCompact
 import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthExpanded
@@ -27,10 +30,11 @@ class HomeActivity : ComponentActivity() {
                 val windowSizeClass = calculateWindowSizeClass(activity = this)
                 if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact){
                     HomeScreenForNormalPhones(modifier = Modifier.fillMaxSize())
-                }else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact){
-
                 }else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Medium){
-
+                    HomeScreenForMediumScreens(modifier = Modifier.fillMaxSize())
+                }else if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded){
+                    Log.d("ssssssssssssssssssssssssssssssssssss", "onCreate: ")
+                    HomeScreenForLargeScreens(modifier = Modifier.fillMaxSize())
                 }
             }
         }
