@@ -26,9 +26,9 @@ class GalleryActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModel = ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory(application)).get<GalleryViewModel>()
+        WindowCompat.setDecorFitsSystemWindows(window,false)
         setContent {
-            ImageEditorTheme {
-
+            ImageEditorTheme(isCustomColorUsed = true) {
                 GalleryScreen(
                     modifier = Modifier.fillMaxSize(),
                     activity = this,
