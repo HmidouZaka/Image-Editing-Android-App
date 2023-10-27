@@ -189,6 +189,9 @@ fun GalleryScreenForCompatScreen(
             }
         }
     ) {
+
+
+
         LazyVerticalGrid(
             modifier = modifier,
             contentPadding = PaddingValues(4.dp),
@@ -238,9 +241,9 @@ fun GalleryScreenForCompatScreen(
                         model = ImageRequest.Builder(context)
                             .data(it.getCompleteUrl())
                             .crossfade(true)
-                            .placeholder(R.drawable.example1)
-                            .crossfade(600)
-                            .error(R.drawable.example8)
+                            .placeholder(R.drawable.placeholder_image)
+                            .crossfade(500)
+                            .error(R.drawable.error_image)
                             .build(),
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
