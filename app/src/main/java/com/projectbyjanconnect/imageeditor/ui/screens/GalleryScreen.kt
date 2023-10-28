@@ -117,7 +117,7 @@ fun GalleryScreen(
     val imagesList = (imagesResponse as Response.Success).data ?: mutableListOf()
     val windowClass = calculateWindowSizeClass(activity = activity)
     when (windowClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> GalleryScreenForCompatScreen(modifier, imagesList) {
+        WindowWidthSizeClass.Compact -> GalleryScreenForCompatScreen(modifier, imagesList,2) {
                 image: () -> Uri?,
                 onDismiss: () -> Unit,
                 onClickSelect: () -> Unit,
@@ -133,7 +133,7 @@ fun GalleryScreen(
                 modifier = modifierDialog
             )
         }
-        WindowWidthSizeClass.Medium -> GalleryScreenForCompatScreen(modifier, imagesList) {
+        WindowWidthSizeClass.Medium -> GalleryScreenForCompatScreen(modifier, imagesList,3) {
                 image: () -> Uri?,
                 onDismiss: () -> Unit,
                 onClickSelect: () -> Unit,
@@ -149,7 +149,7 @@ fun GalleryScreen(
                 modifier = modifierDialog
             )
         }
-        WindowWidthSizeClass.Expanded -> GalleryScreenForCompatScreen(modifier, imagesList) {
+        WindowWidthSizeClass.Expanded -> GalleryScreenForCompatScreen(modifier, imagesList,4) {
                 image: () -> Uri?,
                 onDismiss: () -> Unit,
                 onClickSelect: () -> Unit,
@@ -175,6 +175,7 @@ fun GalleryScreen(
 fun GalleryScreenForCompatScreen(
     modifier: Modifier = Modifier,
     list: List<GalleryImage>,
+    countImagesPar:Int = 2,
     dialog: @Composable (
         image: () -> Uri?,
         onDismiss: () -> Unit,
@@ -190,7 +191,7 @@ fun GalleryScreenForCompatScreen(
     }
 
     var countImages by rememberSaveable {
-        mutableStateOf(2)
+        mutableStateOf(countImagesPar)
     }
 
     val countImageInRow by animateIntAsState(targetValue = countImages, label = "aaaaaa")
@@ -218,12 +219,12 @@ fun GalleryScreenForCompatScreen(
                     )
                     if (change.type == PointerType.Touch) {
                         if (change.previousPosition.x > change.position.x && isAllowToChangeState) {
-                            if (countImages in 2..4) {
+                            if (countImages in countImagesPar..countImagesPar + 2) {
                                 isAllowToChangeState = false
                                 ++countImages
                             }
                         } else if (change.previousPosition.x < change.position.x && isAllowToChangeState) {
-                            if (countImages in 3..5) {
+                            if (countImages in (countImagesPar+1)..countImagesPar+3) {
                                 isAllowToChangeState = false
                                 --countImages
                             }

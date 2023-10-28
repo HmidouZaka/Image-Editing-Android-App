@@ -16,6 +16,7 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -167,12 +168,10 @@ private fun SelectImageDialogAnimator(
                 isVisible = false
             }
         }
-    }, properties = DialogProperties()) {
+    }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         Box(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.error)
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary)
                 .pointerInput(Unit) {
                     detectTapGestures {
                         coroutineScope.launch {
@@ -186,7 +185,13 @@ private fun SelectImageDialogAnimator(
         ) {
             AnimatedScaleInTransition(
                 visible = isVisible,
-                content = { content() }
+                content = {
+                    Box(modifier = Modifier.pointerInput(Unit) {
+                        awaitEachGesture {
+                            awaitPointerEvent().changes.forEach { it.consume() }
+                        }
+                    }) { content() }
+                }
             )
         }
 
@@ -254,7 +259,9 @@ private fun DialogContentForMediumScreens(
     onClickSelect: () -> Unit,
 ) {
     Row(
-        modifier = modifier
+        modifier = Modifier
+            .padding(16.dp)
+            .then(modifier)
     ) {
         AsyncImage(
             model = imageRequest,
@@ -334,8 +341,10 @@ fun DialogContentForCompatScreensPreview() {
     ImageEditorTheme {
         val context = LocalContext.current
         DialogContentForCompatScreens(
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background.copy(0.8f)),
-            imageRequest =  ImageRequest.Builder(context)
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background.copy(0.8f)),
+            imageRequest = ImageRequest.Builder(context)
                 .data("")
                 .crossfade(true)
                 .placeholder(R.drawable.placeholder_image)
@@ -354,8 +363,10 @@ fun DialogContentForMediumScreensPreview() {
     ImageEditorTheme {
         val context = LocalContext.current
         DialogContentForMediumScreens(
-            modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background.copy(0.8f)),
-            imageRequest =  ImageRequest.Builder(context)
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background.copy(0.8f)),
+            imageRequest = ImageRequest.Builder(context)
                 .data("")
                 .crossfade(true)
                 .placeholder(R.drawable.placeholder_image)
