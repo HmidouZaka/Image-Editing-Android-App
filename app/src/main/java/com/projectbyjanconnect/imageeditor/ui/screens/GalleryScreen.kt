@@ -1,7 +1,9 @@
 package com.projectbyjanconnect.imageeditor.ui.screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.Configuration
+import android.net.Uri
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedContent
@@ -63,6 +65,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -96,6 +99,9 @@ import coil.request.ImageRequest
 import com.projectbyjanconnect.imageeditor.R
 import com.projectbyjanconnect.imageeditor.model.GalleryImage
 import com.projectbyjanconnect.imageeditor.presintation.GalleryViewModel
+import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.SelectImageDialogForCompatScreens
+import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.SelectImageDialogForExpandedScreens
+import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.SelectImageDialogForMediumScreens
 import com.projectbyjanconnect.imageeditor.utils.Response
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -111,9 +117,54 @@ fun GalleryScreen(
     val imagesList = (imagesResponse as Response.Success).data ?: mutableListOf()
     val windowClass = calculateWindowSizeClass(activity = activity)
     when (windowClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> GalleryScreenForCompatScreen(modifier, imagesList)
-        WindowWidthSizeClass.Medium -> GalleryScreenForMediumScreen(modifier, imagesList)
-        WindowWidthSizeClass.Expanded -> GalleryScreenForLargeScreen(modifier, imagesList)
+        WindowWidthSizeClass.Compact -> GalleryScreenForCompatScreen(modifier, imagesList) {
+                image: () -> Uri?,
+                onDismiss: () -> Unit,
+                onClickSelect: () -> Unit,
+                context: Context,
+                modifierDialog: Modifier,
+            ->
+
+            SelectImageDialogForCompatScreens(
+                context = context,
+                image = image(),
+                onClickSelect = onClickSelect,
+                onDismiss = onDismiss,
+                modifier = modifierDialog
+            )
+        }
+        WindowWidthSizeClass.Medium -> GalleryScreenForCompatScreen(modifier, imagesList) {
+                image: () -> Uri?,
+                onDismiss: () -> Unit,
+                onClickSelect: () -> Unit,
+                context: Context,
+                modifierDialog: Modifier,
+            ->
+
+            SelectImageDialogForMediumScreens(
+                context = context,
+                image = image(),
+                onClickSelect = onClickSelect,
+                onDismiss = onDismiss,
+                modifier = modifierDialog
+            )
+        }
+        WindowWidthSizeClass.Expanded -> GalleryScreenForCompatScreen(modifier, imagesList) {
+                image: () -> Uri?,
+                onDismiss: () -> Unit,
+                onClickSelect: () -> Unit,
+                context: Context,
+                modifierDialog: Modifier,
+            ->
+
+            SelectImageDialogForExpandedScreens(
+                context = context,
+                image =  image(),
+                onClickSelect = onClickSelect,
+                onDismiss = onDismiss,
+                modifier = modifierDialog
+            )
+        }
     }
 }
 
@@ -124,6 +175,13 @@ fun GalleryScreen(
 fun GalleryScreenForCompatScreen(
     modifier: Modifier = Modifier,
     list: List<GalleryImage>,
+    dialog: @Composable (
+        image: () -> Uri?,
+        onDismiss: () -> Unit,
+        onClickSelect: () -> Unit,
+        context: Context,
+        modifier: Modifier,
+    ) -> Unit,
 ) {
     val context = LocalContext.current
     val gridState = rememberLazyGridState()
@@ -141,6 +199,7 @@ fun GalleryScreenForCompatScreen(
 
 
     val maxWidth = LocalConfiguration.current.screenWidthDp
+
 
 
 
@@ -191,6 +250,10 @@ fun GalleryScreenForCompatScreen(
     ) {
 
 
+        var selectedImage: String? by rememberSaveable {
+            mutableStateOf(null)
+        }
+
 
         LazyVerticalGrid(
             modifier = modifier,
@@ -209,7 +272,7 @@ fun GalleryScreenForCompatScreen(
                     )
                 )
             }
-            items(list,key = { it.id }) {
+            items(list, key = { it.id }) {
                 var isPressed by remember {
                     mutableStateOf(false)
                 }
@@ -219,7 +282,9 @@ fun GalleryScreenForCompatScreen(
                         .height(((maxWidth - 20) / countImageInRow).dp)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
-
+                            selectedImage = it
+                                .getCompleteUrl()
+                                .toString()
                         }
                         .pointerInput(Unit) {
                             awaitEachGesture {
@@ -298,32 +363,29 @@ fun GalleryScreenForCompatScreen(
                 )
             }
         }
+
+        dialog(
+            { selectedImage?.let { Uri.parse(it) } },
+            { selectedImage = null },
+            {
+                selectedImage = null
+            },
+            context,
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.background.copy(alpha = 0.8f))
+        )
     }
 
 
 }
 
-@Composable
-fun GalleryScreenForLargeScreen(
-    modifier: Modifier = Modifier,
-    list: List<GalleryImage>,
-) {
-
-}
-
-@Composable
-fun GalleryScreenForMediumScreen(
-    modifier: Modifier = Modifier,
-    list: List<GalleryImage>,
-) {
-
-}
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun GalleryScreenForCompatScreenPreview() {
-    val context = LocalContext.current
     GalleryScreenForCompatScreen(
         modifier = Modifier.fillMaxSize(),
         list = listOf(
@@ -335,6 +397,7 @@ fun GalleryScreenForCompatScreenPreview() {
             GalleryImage(0, "", "", 0L),
             GalleryImage(0, "", "", 0L),
             GalleryImage(0, "", "", 0L),
-        )
-    )
+        ), dialog = { _, _, _, _, _ ->
+
+        })
 }
