@@ -525,10 +525,14 @@ fun GalleryScreenForCompatScreen(
             { selectedImage?.let { Uri.parse(it) } },
             { selectedImage = null },
             {
-                val statEditingIntent = Intent(context,EditImageActivity::class.java)
-                statEditingIntent.putExtra("target_image_uri",selectedImage)
-                context.startActivity(statEditingIntent)
-                (context as ComponentActivity).finish()
+                selectedImage?.let {
+                    val statEditingIntent = Intent(context,EditImageActivity::class.java)
+                    statEditingIntent.action = Intent.ACTION_SEND
+                    statEditingIntent.type = "image/*"
+                    statEditingIntent.putExtra(Intent.EXTRA_STREAM,Uri.parse(selectedImage))
+                    context.startActivity(statEditingIntent)
+                    (context as ComponentActivity).finish()
+                }
             },
             context,
             Modifier
