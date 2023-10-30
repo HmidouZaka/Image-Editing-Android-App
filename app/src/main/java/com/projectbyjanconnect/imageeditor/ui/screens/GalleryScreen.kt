@@ -1,71 +1,59 @@
 package com.projectbyjanconnect.imageeditor.ui.screens
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
+import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.compose.animation.AnimatedContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.awaitHorizontalDragOrCancellation
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.areStatusBarsVisible
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
@@ -80,7 +68,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -93,17 +80,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.projectbyjanconnect.imageeditor.R
 import com.projectbyjanconnect.imageeditor.model.GalleryImage
 import com.projectbyjanconnect.imageeditor.presintation.GalleryViewModel
+import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.ErrorScreenGallery
+import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.LoadingScreen
 import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.SelectImageDialogForCompatScreens
 import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.SelectImageDialogForExpandedScreens
 import com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components.SelectImageDialogForMediumScreens
 import com.projectbyjanconnect.imageeditor.utils.Response
-import kotlinx.coroutines.coroutineScope
+import com.projectbyjanconnect.img_edit_feature.ui.activities.EditImageActivity
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -113,59 +101,196 @@ fun GalleryScreen(
     activity: ComponentActivity,
     galleryViewModel: GalleryViewModel,
 ) {
-    val imagesResponse by galleryViewModel.imageState.collectAsState()
-    val imagesList = (imagesResponse as Response.Success).data ?: mutableListOf()
     val windowClass = calculateWindowSizeClass(activity = activity)
-    when (windowClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> GalleryScreenForCompatScreen(modifier, imagesList,2) {
-                image: () -> Uri?,
-                onDismiss: () -> Unit,
-                onClickSelect: () -> Unit,
-                context: Context,
-                modifierDialog: Modifier,
-            ->
+    val imagesResponse by galleryViewModel.imageState.collectAsState()
 
-            SelectImageDialogForCompatScreens(
-                context = context,
-                image = image(),
-                onClickSelect = onClickSelect,
-                onDismiss = onDismiss,
-                modifier = modifierDialog
-            )
+
+
+
+    when (imagesResponse) {
+        is Response.Error -> {
+            var isPermissionDialogShowed by rememberSaveable {
+                mutableStateOf(false)
+            }
+
+            val activityRequest = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.RequestPermission(),
+                onResult = {
+                    if (it) {
+                        galleryViewModel.loadImages()
+                    } else {
+                        if (!isPermissionDialogShowed) {
+                            isPermissionDialogShowed = true
+                        }
+                    }
+                })
+
+            val message = (imagesResponse as Response.Error).message ?: "unKnow error"
+            when (windowClass.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> ErrorScreenGallery(
+                    modifier = Modifier.fillMaxSize(),
+                    textSize = 17.sp,
+                    imageSize = 100.dp,
+                    onClickRetry = {
+                        if (message == GalleryViewModel.PERMISSION_ERROR) {
+                            activityRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        } else {
+                            galleryViewModel.loadImages()
+                        }
+                    },
+                    message = message,
+                    buttonText = if (message == GalleryViewModel.PERMISSION_ERROR) "Get Permission" else "Retry"
+                )
+
+                WindowWidthSizeClass.Medium -> ErrorScreenGallery(
+                    modifier = Modifier.fillMaxSize(),
+                    textSize = 20.sp,
+                    imageSize = 130.dp,
+                    onClickRetry = {
+                        if (message == GalleryViewModel.PERMISSION_ERROR) {
+                            activityRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        } else {
+                            galleryViewModel.loadImages()
+                        }
+                    },
+                    message = message,
+                    buttonText = if (message == GalleryViewModel.PERMISSION_ERROR) "Get Permission" else "Retry"
+                )
+
+                WindowWidthSizeClass.Expanded -> ErrorScreenGallery(
+                    modifier = Modifier.fillMaxSize(),
+                    textSize = 24.sp,
+                    imageSize = 160.dp,
+                    onClickRetry = {
+                        if (message == GalleryViewModel.PERMISSION_ERROR) {
+                            activityRequest.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        } else {
+                            galleryViewModel.loadImages()
+                        }
+                    },
+                    message = message,
+                    buttonText = if (message == GalleryViewModel.PERMISSION_ERROR) "Get Permission" else "Retry"
+                )
+            }
+
+            if (isPermissionDialogShowed) {
+                AlertDialog(
+                    onDismissRequest = { isPermissionDialogShowed = false },
+                    confirmButton = {
+                        Button(onClick = {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.fromParts("package",activity.packageName,null)
+                            activity.startActivity(intent)
+                        }) {
+                            Text(text = "OK")
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp)),
+                    dismissButton = { Button(onClick = {isPermissionDialogShowed = false }) {
+                        Text(text = "CANCEL")
+                    } },
+                    icon = { Icon(imageVector = Icons.Default.Info, contentDescription = null, modifier = Modifier.size(70.dp)) },
+                    title = { Text(text = "Important") },
+                    text = {
+                        Text(text = "Permission is important to fetch images in your phone so you can chose any image and edit it \nPERMISSION IS REQUIRED  ")
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    tonalElevation = 8.dp
+                )
+            }
         }
-        WindowWidthSizeClass.Medium -> GalleryScreenForCompatScreen(modifier, imagesList,3) {
-                image: () -> Uri?,
-                onDismiss: () -> Unit,
-                onClickSelect: () -> Unit,
-                context: Context,
-                modifierDialog: Modifier,
-            ->
 
-            SelectImageDialogForMediumScreens(
-                context = context,
-                image = image(),
-                onClickSelect = onClickSelect,
-                onDismiss = onDismiss,
-                modifier = modifierDialog
-            )
+        is Response.Loading -> {
+            when (windowClass.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> LoadingScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    progressSize = 30.dp
+                )
+
+                WindowWidthSizeClass.Medium -> LoadingScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    progressSize = 40.dp
+                )
+
+                WindowWidthSizeClass.Expanded -> LoadingScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    progressSize = 50.dp
+                )
+            }
         }
-        WindowWidthSizeClass.Expanded -> GalleryScreenForCompatScreen(modifier, imagesList,4) {
-                image: () -> Uri?,
-                onDismiss: () -> Unit,
-                onClickSelect: () -> Unit,
-                context: Context,
-                modifierDialog: Modifier,
-            ->
 
-            SelectImageDialogForExpandedScreens(
-                context = context,
-                image =  image(),
-                onClickSelect = onClickSelect,
-                onDismiss = onDismiss,
-                modifier = modifierDialog
-            )
+        is Response.Success -> {
+            val imagesList = (imagesResponse as Response.Success).data ?: mutableListOf()
+
+            when (windowClass.widthSizeClass) {
+                WindowWidthSizeClass.Compact -> GalleryScreenForCompatScreen(
+                    modifier,
+                    imagesList,
+                    2
+                ) {
+                        image: () -> Uri?,
+                        onDismiss: () -> Unit,
+                        onClickSelect: () -> Unit,
+                        context: Context,
+                        modifierDialog: Modifier,
+                    ->
+
+                    SelectImageDialogForCompatScreens(
+                        context = context,
+                        image = image(),
+                        onClickSelect = onClickSelect,
+                        onDismiss = onDismiss,
+                        modifier = modifierDialog
+                    )
+                }
+
+                WindowWidthSizeClass.Medium -> GalleryScreenForCompatScreen(
+                    modifier,
+                    imagesList,
+                    3
+                ) {
+                        image: () -> Uri?,
+                        onDismiss: () -> Unit,
+                        onClickSelect: () -> Unit,
+                        context: Context,
+                        modifierDialog: Modifier,
+                    ->
+
+                    SelectImageDialogForMediumScreens(
+                        context = context,
+                        image = image(),
+                        onClickSelect = onClickSelect,
+                        onDismiss = onDismiss,
+                        modifier = modifierDialog
+                    )
+                }
+
+                WindowWidthSizeClass.Expanded -> GalleryScreenForCompatScreen(
+                    modifier,
+                    imagesList,
+                    4
+                ) {
+                        image: () -> Uri?,
+                        onDismiss: () -> Unit,
+                        onClickSelect: () -> Unit,
+                        context: Context,
+                        modifierDialog: Modifier,
+                    ->
+
+                    SelectImageDialogForExpandedScreens(
+                        context = context,
+                        image = image(),
+                        onClickSelect = onClickSelect,
+                        onDismiss = onDismiss,
+                        modifier = modifierDialog
+                    )
+                }
+            }
         }
     }
+
 }
 
 
@@ -175,7 +300,7 @@ fun GalleryScreen(
 fun GalleryScreenForCompatScreen(
     modifier: Modifier = Modifier,
     list: List<GalleryImage>,
-    countImagesPar:Int = 2,
+    countImagesPar: Int = 2,
     dialog: @Composable (
         image: () -> Uri?,
         onDismiss: () -> Unit,
@@ -224,7 +349,7 @@ fun GalleryScreenForCompatScreen(
                                 ++countImages
                             }
                         } else if (change.previousPosition.x < change.position.x && isAllowToChangeState) {
-                            if (countImages in (countImagesPar+1)..countImagesPar+3) {
+                            if (countImages in (countImagesPar + 1)..countImagesPar + 3) {
                                 isAllowToChangeState = false
                                 --countImages
                             }
@@ -277,15 +402,46 @@ fun GalleryScreenForCompatScreen(
                 var isPressed by remember {
                     mutableStateOf(false)
                 }
+                var isImageAvailable by remember {
+                    mutableStateOf(true)
+                }
+                val image = remember {
+                    ImageRequest.Builder(context)
+                        .data(it.getCompleteUrl())
+                        .crossfade(true)
+                        .placeholder(R.drawable.placeholder_image)
+                        .crossfade(500)
+                        .error(R.drawable.error_image)
+                        .build()
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(((maxWidth - 20) / countImageInRow).dp)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
-                            selectedImage = it
-                                .getCompleteUrl()
-                                .toString()
+                            Log.d("ssssssssssssssssss", " $isImageAvailable")
+                            Log.d(
+                                "ssssssssssssssssss", " ${
+                                    it
+                                        .getCompleteUrl()
+                                }"
+                            )
+                            if (isImageAvailable) {
+                                selectedImage = it
+                                    .getCompleteUrl()
+                                    .toString()
+
+
+                            } else {
+                                Toast
+                                    .makeText(
+                                        context,
+                                        "this image is not available",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                    .show()
+                            }
                         }
                         .pointerInput(Unit) {
                             awaitEachGesture {
@@ -303,18 +459,18 @@ fun GalleryScreenForCompatScreen(
                             }
                         }
                 ) {
+
+
                     AsyncImage(
-                        model = ImageRequest.Builder(context)
-                            .data(it.getCompleteUrl())
-                            .crossfade(true)
-                            .placeholder(R.drawable.placeholder_image)
-                            .crossfade(500)
-                            .error(R.drawable.error_image)
-                            .build(),
+                        model = image,
                         contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
-                        alignment = Alignment.Center
+                        alignment = Alignment.Center,
+                        onError = {
+                            Log.d("ssssssssssssssssss", " $isImageAvailable")
+                            isImageAvailable = false
+                        }
                     )
                     AnimatedVisibility(
                         visible = isPressed,
@@ -369,7 +525,10 @@ fun GalleryScreenForCompatScreen(
             { selectedImage?.let { Uri.parse(it) } },
             { selectedImage = null },
             {
-                selectedImage = null
+                val statEditingIntent = Intent(context,EditImageActivity::class.java)
+                statEditingIntent.putExtra("target_image_uri",selectedImage)
+                context.startActivity(statEditingIntent)
+                (context as ComponentActivity).finish()
             },
             context,
             Modifier

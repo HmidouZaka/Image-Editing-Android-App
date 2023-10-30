@@ -24,6 +24,7 @@ import com.projectbyjanconnect.imageeditor.R
 import com.projectbyjanconnect.imageeditor.ui.theme.INTER_MEDIUM
 import com.projectbyjanconnect.imageeditor.ui.theme.MONTSERRAT_MEDIUM
 
+
 @Composable
 fun <T>ActionsRow(
     modifier: Modifier = Modifier,
@@ -38,7 +39,7 @@ fun <T>ActionsRow(
     Column(modifier = modifier) {
         Text(
             text = "Options",
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = 0.dp),
             fontSize = 24.sp,
             fontFamily = INTER_MEDIUM,
             color = MaterialTheme.colorScheme.onBackground
@@ -49,7 +50,7 @@ fun <T>ActionsRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(horizontalScrollState)
-                .padding(8.dp)
+                .padding(vertical = 8.dp)
         ) {
 
             val iconButtonModifier = Modifier
@@ -133,7 +134,7 @@ fun <T>ActionsRow(
 
         Text(
             text =if (listOfExamplesImages.isEmpty()) "Examples" else "Portfolio",
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.padding(horizontal = 0.dp),
             fontSize = 24.sp,
             fontFamily = INTER_MEDIUM,
             color = MaterialTheme.colorScheme.onBackground

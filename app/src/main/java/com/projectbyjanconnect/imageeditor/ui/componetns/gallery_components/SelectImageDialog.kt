@@ -1,20 +1,13 @@
 package com.projectbyjanconnect.imageeditor.ui.componetns.gallery_components
 
 import android.content.Context
-import android.content.res.Configuration.CONTENTS_FILE_DESCRIPTOR
-import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.net.Uri
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -30,8 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -52,13 +43,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.window.SecureFlagPolicy
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.projectbyjanconnect.imageeditor.R
 import com.projectbyjanconnect.imageeditor.ui.theme.INTER_BOLD
 import com.projectbyjanconnect.imageeditor.ui.theme.INTER_LIGHT
-import com.projectbyjanconnect.imageeditor.ui.theme.INTER_MEDIUM
 import com.projectbyjanconnect.imageeditor.ui.theme.ImageEditorTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -212,7 +201,7 @@ private fun DialogContentForCompatScreens(
     onClickSelect: () -> Unit,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier.padding(horizontal = 8.dp).then(modifier)
     ) {
         AsyncImage(
             model = imageRequest,

@@ -7,12 +7,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,8 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -278,7 +273,7 @@ fun HomeScreenForMediumScreens(
 
                 Text(
                     text = "Options",
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 0.dp),
                     fontSize = 24.sp,
                     fontFamily = INTER_MEDIUM,
                     color = MaterialTheme.colorScheme.onBackground
@@ -353,7 +348,7 @@ fun HomeScreenForMediumScreens(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
-                    modifier =  Modifier
+                    modifier = Modifier
                         .padding(horizontal = 12.dp)
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(20.dp))
@@ -371,6 +366,8 @@ fun HomeScreenForMediumScreens(
                     Text(text = "Generate Image By AI")
                 }
 
+                Spacer(modifier = Modifier.height(50.dp))
+
             }
 
 
@@ -378,13 +375,6 @@ fun HomeScreenForMediumScreens(
                 modifier = Modifier
                     .weight(0.6f)
             ){
-                Text(
-                    text =if (listOfExamplesImages.isEmpty()) "Examples" else "Portfolio",
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    fontSize = 24.sp,
-                    fontFamily = INTER_MEDIUM,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
                 CompositionLocalProvider(
                     LocalOverscrollConfiguration provides null
                 ) {
@@ -408,6 +398,17 @@ fun HomeScreenForMediumScreens(
                         LazyVerticalStaggeredGrid(
                             columns = StaggeredGridCells.Adaptive(150.dp),
                             content = {
+                                item(
+                                    span = StaggeredGridItemSpan.FullLine
+                                ) {
+                                    Text(
+                                        text =if (listOfExamplesImages.isEmpty()) "Examples" else "Portfolio",
+                                        modifier = Modifier,
+                                        fontSize = 24.sp,
+                                        fontFamily = INTER_MEDIUM,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
                                 items(data) {
                                     PortfolioImage(
                                         modifier = Modifier
@@ -430,6 +431,17 @@ fun HomeScreenForMediumScreens(
                         LazyVerticalStaggeredGrid(
                             columns = StaggeredGridCells.Adaptive(150.dp),
                             content = {
+                                item(
+                                    span = StaggeredGridItemSpan.FullLine
+                                ) {
+                                    Text(
+                                        text =if (listOfExamplesImages.isEmpty()) "Examples" else "Portfolio",
+                                        modifier = Modifier,
+                                        fontSize = 24.sp,
+                                        fontFamily = INTER_MEDIUM,
+                                        color = MaterialTheme.colorScheme.onBackground
+                                    )
+                                }
                                 items(
                                     listOf("", "", "", "", "", "")
                                 ) {

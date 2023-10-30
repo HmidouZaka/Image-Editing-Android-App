@@ -9,15 +9,9 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.view.WindowCompat
 import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForLargeScreens
 import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForMediumScreens
 import com.projectbyjanconnect.imageeditor.ui.screens.HomeScreenForNormalPhones
-import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthCompact
-import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthExpanded
-import com.projectbyjanconnect.imageeditor.ui.screens.StartUpScreenWidthMedium
 import com.projectbyjanconnect.imageeditor.ui.theme.ImageEditorTheme
 
 class HomeActivity : ComponentActivity() {

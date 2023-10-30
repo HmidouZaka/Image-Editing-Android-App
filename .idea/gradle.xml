@@ -13,6 +13,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/img-edit-feature" />
+            <option value="$PROJECT_DIR$/img-edit-feature/core-database" />
+            <option value="$PROJECT_DIR$/img-edit-feature/core-network" />
           </set>
         </option>
       </GradleProjectSettings>
