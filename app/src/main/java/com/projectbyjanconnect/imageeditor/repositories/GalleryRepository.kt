@@ -2,16 +2,15 @@ package com.projectbyjanconnect.imageeditor.repositories
 
 import android.content.Context
 import android.provider.MediaStore.Images.Media
-import androidx.annotation.IntRange
 import com.projectbyjanconnect.imageeditor.model.GalleryImage
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class GalleryRepository {
 
     private val imagesList = mutableListOf<GalleryImage>()
 
-    suspend fun loadImages(context: Context) = suspendCoroutine<List<GalleryImage>> {
+    suspend fun loadImages(context: Context) = withContext(Dispatchers.IO) {
         if (imagesList.isEmpty()) {
             val contentResolver = context.contentResolver
             val externalContentUrl = Media.EXTERNAL_CONTENT_URI
@@ -72,9 +71,9 @@ class GalleryRepository {
                 }
             }
             imagesList.sortBy { it.id }
-            it.resume(imagesList)
+            imagesList
         }else{
-            it.resume(imagesList)
+            imagesList
         }
     }
 
