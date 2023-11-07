@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore.Images.Media
+import android.os.Environment
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.projectbyjanconnect.img_edit_feature.presintations.ImageEditingViewModel
 import com.projectbyjanconnect.img_edit_feature.ui.screens.MainEditingScreen
 import com.projectbyjanconnect.img_edit_feature.ui.screens.TargetImageNotFoundScreen
+import java.io.File
 
 
 class EditImageActivity : ComponentActivity() {
@@ -64,8 +65,12 @@ class EditImageActivity : ComponentActivity() {
             inputStream?.close()
             image
         } catch (ex: Exception) {
-            val image = Media.getBitmap(contentResolver,uri)
-            image
+            val filePath = uri.toString()
+            val sd = Environment.getExternalStorageDirectory().path
+            val image = File(sd + filePath, "jjjjj.jpg")
+            val bmOptions = BitmapFactory.Options()
+            val bitmap = BitmapFactory.decodeFile(image.absolutePath, bmOptions)
+            bitmap
         }
     }
 }
